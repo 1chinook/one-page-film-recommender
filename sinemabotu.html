@@ -460,29 +460,40 @@
             height: 80%;
             }
         
+        .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+        button.category { font: inherit; color: inherit; }
+        #tmdb-key { max-width: 10rem; }
+        #status { min-height: 1.3em; margin: .35em 0; }
+        #main-container.showing-film { height: 22rem; width: 34rem; max-width: 90vw; background: white; box-shadow: 22px 13px 150px 3px white; }
+        .showing-film #right-section h2, .showing-film #right-section p:not(#category) { color: #222; }
+        .showing-film #newQuery-btn p { color: white; }
     </style>
 </head>
 <body>
     <div id="main-container">
         <div id="point-container">
+            <label for="slider" class="visually-hidden">Asgari TMDB puanı</label>
             <input type="range" id="slider" min="1" max="9" value="1" step="0.5">
             <div id="point">1</div>
         </div>
         <div id="search-container">
+            <label for="tmdb-key">TMDB v3 API anahtarı</label>
+            <input id="tmdb-key" type="password" autocomplete="off" spellcheck="false">
+            <p id="status" role="status"></p>
             <div id="category-container">
-                <div class="category" data-id="28"><img src="https://cdn-icons-png.flaticon.com/512/3857/3857467.png"><h4>Aksiyon</h4></div>
-                <div class="category" data-id="53"><img src="https://cdn-icons-png.flaticon.com/512/188/188568.png"><h4>Gerilim</h4></div>
-                <div class="category" data-id="35"><img src="https://cdn-icons-png.flaticon.com/512/8468/8468485.png"><h4>Komedi</h4></div>
-                <div class="category" data-id="18"><img src="https://cdn-icons-png.flaticon.com/512/1049/1049352.png"><h4>Dram</h4></div>
-                <div class="category" data-id="10749"><img src="https://cdn-icons-png.flaticon.com/512/11009/11009785.png"><h4>Romantik</h4></div>
-                <div class="category" data-id="10752"><img src="https://cdn-icons-png.flaticon.com/512/861/861908.png"><h4>Savaş</h4></div>
-                <div class="category" data-id="878"><img src="https://cdn-icons-png.flaticon.com/512/620/620689.png"><h4>Bilim-Kurgu</h4></div>
-                <div class="category" data-id="16"><img src="https://cdn-icons-png.flaticon.com/512/891/891948.png"><h4>Animasyon</h4></div>
-                <div class="category" data-id="80"><img src="https://cdn-icons-png.flaticon.com/512/8858/8858927.png"><h4>Suç</h4></div>
+                <button class="category" type="button" data-id="28"><img src="https://cdn-icons-png.flaticon.com/512/3857/3857467.png" alt=""><h4>Aksiyon</h4></button>
+                <button class="category" type="button" data-id="53"><img src="https://cdn-icons-png.flaticon.com/512/188/188568.png" alt=""><h4>Gerilim</h4></button>
+                <button class="category" type="button" data-id="35"><img src="https://cdn-icons-png.flaticon.com/512/8468/8468485.png" alt=""><h4>Komedi</h4></button>
+                <button class="category" type="button" data-id="18"><img src="https://cdn-icons-png.flaticon.com/512/1049/1049352.png" alt=""><h4>Dram</h4></button>
+                <button class="category" type="button" data-id="10749"><img src="https://cdn-icons-png.flaticon.com/512/11009/11009785.png" alt=""><h4>Romantik</h4></button>
+                <button class="category" type="button" data-id="10752"><img src="https://cdn-icons-png.flaticon.com/512/861/861908.png" alt=""><h4>Savaş</h4></button>
+                <button class="category" type="button" data-id="878"><img src="https://cdn-icons-png.flaticon.com/512/620/620689.png" alt=""><h4>Bilim-Kurgu</h4></button>
+                <button class="category" type="button" data-id="16"><img src="https://cdn-icons-png.flaticon.com/512/891/891948.png" alt=""><h4>Animasyon</h4></button>
+                <button class="category" type="button" data-id="80"><img src="https://cdn-icons-png.flaticon.com/512/8858/8858927.png" alt=""><h4>Suç</h4></button>
             </div>
         </div>
         <div id="result-container">
-            <div id="left-section"><img src="" alt=""></div>
+            <div id="left-section"><img alt=""></div>
             <div id="right-section">
                 <h2 id="movie-name"></h2>
                 <div id="second-section"><p id="director"></p><p></p><p id="category" style="color: red;">Dram</p></div>
@@ -490,140 +501,7 @@
                 <button id="newQuery-btn"><p>Yeniden Arat</p></button>
         </div>
     </div>
+    </div>
+    <script src="app.js"></script>
 </body>
 </html>
-
-<script>
-
-    let pointReader = document.getElementById("slider");
-    const newQueryBtn = document.getElementById("newQuery-btn");
-    const categories = document.querySelectorAll(".category");
-    let point = pointReader.value;
-    console.log(point);
-
-
-    pointReader.addEventListener("input", function() {
-    
-        let glowSize = point * 3; 
-        
-        if (point >= 8) {
-            this.classList.add("super-charge");
-            this.style.setProperty('--thumb-glow', (point * 6) + 'px');
-            this.style.setProperty('--thumb-color', 'white'); 
-        } else {
-            this.classList.remove("super-charge");
-            this.style.setProperty('--thumb-glow', glowSize + 'px');
-            this.style.setProperty('--thumb-color', 'rgb(238, 203, 0)');
-        }
-    });
-
-categories.forEach(category => {
-    category.addEventListener("click", function() {
-        const selectedGenreId = this.getAttribute("data-id");
-        const minPoint = pointReader.value; 
-        filmGetir(minPoint, selectedGenreId);
-        setTimeout(() => {
-            document.getElementById("point-container").style.display = "none";
-            document.getElementById("search-container").style.display = "none";
-            document.getElementById("result-container").style.display = "flex";
-        }, 150);
-            document.getElementById("main-container").style.height = 22 + "rem";
-            document.getElementById("main-container").style.width = 34 + "rem";
-            document.getElementById("main-container").style.boxShadow = "22px 13px 150px 3px #ffffff";            
-            document.getElementById("main-container").style.backgroundColor = "white";
-            document.getElementById("newQuery-btn").style.color = "white";
-            document.querySelectorAll("#right-section h2,#right-section p:not(#category)").forEach(el => {
-            el.style.color = "#222";
-        });
-
-        });
-    });
-    
-    newQueryBtn.addEventListener("click", function() {
-        setTimeout(() => {
-            document.getElementById("point-container").style.display = "flex";
-            document.getElementById("search-container").style.display = "block";
-            document.getElementById("result-container").style.display = "none";
-        }, 310);
-        document.getElementById("main-container").style.height = 34 + "rem";
-        document.getElementById("main-container").style.width = 34 + "rem";
-        document.getElementById("main-container").style.boxShadow = "0px 0px 0px 0px #ffffff";
-        document.getElementById("main-container").style.backgroundColor = "#0B0E14";
-
-    });
-    document.addEventListener("input", function() {
-        point = pointReader.value;
-        document.getElementById("point").innerText = point;
-    });
-
-
-    const API_KEY = 'abbd32b1163453a042fe701f1a038874'; //APİYİ PATLATAN OÇTUR // IM BEGGİN DO NOT TOUCH APİ
-    const BASE_URL = 'https://api.themoviedb.org/3';
-
-async function filmGetir(puan, kategoriId, denemeSayisi = 0) {
-    if (denemeSayisi > 3) {
-        puan = Math.max(1, puan - 1);
-    }
-
-    const rastgeleSayfa = Math.floor(Math.random() * 41) + 1; 
-    const url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=tr-TR&sort_by=vote_average.desc&vote_count.gte=200&vote_average.gte=${puan}&with_genres=${kategoriId}&page=${rastgeleSayfa}`;    
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-
-        const uygunFilmler = data.results.filter(f => {
-            const isPrimaryGenre = f.genre_ids[0] == Number(kategoriId);
-            
-            if (kategoriId == "18") {
-                const yasakliTurler = [28, 12, 878]; 
-                const baskinTurVarMi = f.genre_ids.some(id => yasakliTurler.includes(id));
-                return f.overview && f.poster_path && isPrimaryGenre && !baskinTurVarMi && f.vote_average >= Number(puan);
-            }
-
-    return f.overview && f.poster_path && isPrimaryGenre && f.vote_average >= Number(puan);
-});
-
-        let secilenFilm;
-
-        if (uygunFilmler.length > 0) {
-            secilenFilm = uygunFilmler[Math.floor(Math.random() * uygunFilmler.length)];
-        } else {
-            if (denemeSayisi < 5) {
-                return filmGetir(puan, kategoriId, denemeSayisi + 1);
-            } else {
-                alert("Bu kriterlerde film bulunamadı, lütfen puanı düşürün.");
-                location.reload(); 
-                return;
-            }
-        }
-
-        document.getElementById("movie-name").innerText = secilenFilm.title;
-        const posterImg = document.querySelector("#left-section img");
-        posterImg.src = `https://image.tmdb.org/t/p/w500${secilenFilm.poster_path}`;
-        
-        let words = secilenFilm.overview.split(/\s+/);
-        document.getElementById("summary").innerText = words.length > 60 
-            ? words.slice(0, 60).join(" ") + "..." 
-            : secilenFilm.overview;
-
-
-        const tiklananKategoriObjesi = document.querySelector(`.category[data-id="${kategoriId}"] h4`);
-        const kategoriIsmi = tiklananKategoriObjesi ? tiklananKategoriObjesi.innerText : "Film";
-
-        document.getElementById("category").innerText = kategoriIsmi;
-        const creditsUrl = `${BASE_URL}/movie/${secilenFilm.id}/credits?api_key=${API_KEY}`;
-        const creditsResponse = await fetch(creditsUrl);
-        const creditsData = await creditsResponse.json();
-        const director = creditsData.crew.find(person => person.job === 'Director');
-        
-        document.getElementById("director").innerText = director ? director.name : "Yönetmen: Bilinmiyor";
-        document.querySelector("#second-section p:nth-child(2)").innerText = secilenFilm.release_date ? secilenFilm.release_date.split("-")[0] : "";
-        
-        const activeCat = document.querySelector(`.category[data-id="${kategoriId}"] h4`);
-        document.getElementById("category").innerText = activeCat ? activeCat.innerText : "";
-
-    } catch (error) {
-        console.error("API hatası:", error);
-    }
-}
-</script>
